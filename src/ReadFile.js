@@ -102,6 +102,7 @@ class ReadFile extends Component {
     var array1 = this.state.data[3];
     var array2 = this.state.data[5];
     console.log(this.calValue(array1, array2));
+    console.log(this.storeValue());
   };
 
   // transpose array
@@ -142,17 +143,24 @@ class ReadFile extends Component {
     return value;
   }
   storeValue() {
-    var store = [];
+    var dict = {};
     var calnum = this.state.data.length - 3;
     var i, j;
     for ( i = 3; i < calnum - 1; i++) 
       for( j = i + 1; j < calnum; j++) {
-        store.push({
-          key: this.state.data[i][0] + " - " + this.state.data[i][0],
-          value: this.calValue(this.state.data[i] + this.state.data[j])
-        })
+        var array1 = this.state.data[i];
+        var array2 = this.state.data[j];
+        var key = array1[0] + " - " + array2[0];
+        var value = this.calValue(array1, array2);
+        dict[key] = value;
       }
-    console.log(store);
+    var items = Object.keys(dict).map(function(key) {
+      return [key, dict[key]];
+    });
+    items.sort(function(first, second) {
+      return second[1] - first[1];
+    });
+    return items[0];
   }
 
   render() {
