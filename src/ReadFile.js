@@ -81,7 +81,8 @@ class ReadFile extends Component {
       });
 
       var first_worksheet = json.Sheets[json.SheetNames[0]];
-      var data = XLSX.utils.sheet_to_json(first_worksheet, {header:1});
+      var jsondata = XLSX.utils.sheet_to_json(first_worksheet, {header:1});
+      var data = this.transpose(jsondata);
 
       this.setState({
         data,
@@ -97,8 +98,10 @@ class ReadFile extends Component {
   };
 
   processData = () => {
-    var transposed = this.transpose(this.state.data);
-    console.log(JSON.stringify(transposed));
+    console.log(JSON.stringify(this.state.data[3]));
+    var array1 = this.state.data[3];
+    var array2 = this.state.data[5];
+    console.log(this.calValue(array1, array2));
   };
 
   // transpose array
@@ -118,6 +121,38 @@ class ReadFile extends Component {
       }
     }
     return t;
+  }
+  // calculate each pair of arrays
+  calValue(array1, array2) {
+    var caltimes = array1.length;
+    var i, value = 0;
+    for(i = 1; i < caltimes; i ++ ) {
+      if(array1[i] === "-" || array2[i] === "-") {
+      } 
+      else if(array1[i] === array2[i]) {
+        value -= 1;
+      }
+      else if((array1[i] === "1" && array2[i] === "-1") || (array1[i] === "-1" && array2[i] === "1")){
+        value += 2;
+      } 
+      else {
+        value += 1;
+      }
+    }
+    return value;
+  }
+  storeValue() {
+    var store = [];
+    var calnum = this.state.data.length - 3;
+    var i, j;
+    for ( i = 3; i < calnum - 1; i++) 
+      for( j = i + 1; j < calnum; j++) {
+        store.push({
+          key: this.state.data[i][0] + " - " + this.state.data[i][0],
+          value: this.calValue(this.state.data[i] + this.state.data[j])
+        })
+      }
+    console.log(store);
   }
 
   render() {
