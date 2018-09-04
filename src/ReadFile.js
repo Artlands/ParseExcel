@@ -7,7 +7,8 @@ class ReadFile extends Component {
       name:'',
       size:'',
       data: '',
-      transposed:'',
+      scores:'',
+      top:'',
       notification:'',
       process: false
     }
@@ -63,7 +64,9 @@ class ReadFile extends Component {
     this.setState({
       name:'',
       size:'',
-      data:'',
+      data: '',
+      scores:'',
+      top:'',
       notification:'',
       process: false
     })
@@ -98,22 +101,23 @@ class ReadFile extends Component {
   };
 
   processData = () => {
-    console.log(JSON.stringify(this.state.data[3]));
-    var array1 = this.state.data[3];
-    var array2 = this.state.data[5];
-    console.log(this.calValue(array1, array2));
-    console.log(this.storeValue());
+    var scores = this.allValues();
+    this.setState({
+      scores,
+      top:{
+        pair: scores[0][0],
+        score: scores[0][1]
+      }
+    });
   };
 
   // transpose array
-  transpose(a) {
+  transpose = (a) => {
     var w = a.length || 0;
     var h = a[0] instanceof Array ? a[0].length : 0;
-
     if( h === 0 || w === 0) {
       return [];
     }
-
     var i, j, t = [];
     for( i = 0; i < h; i++) {
       t[i] = [];
@@ -123,8 +127,9 @@ class ReadFile extends Component {
     }
     return t;
   }
+
   // calculate each pair of arrays
-  calValue(array1, array2) {
+  calValue = (array1, array2) => {
     var caltimes = array1.length;
     var i, value = 0;
     for(i = 1; i < caltimes; i ++ ) {
@@ -142,7 +147,9 @@ class ReadFile extends Component {
     }
     return value;
   }
-  storeValue() {
+
+  // calculate all socres and sort them
+  allValues =() => {
     var dict = {};
     var calnum = this.state.data.length - 3;
     var i, j;
@@ -160,7 +167,7 @@ class ReadFile extends Component {
     items.sort(function(first, second) {
       return second[1] - first[1];
     });
-    return items[0];
+    return items;
   }
 
   render() {
@@ -178,6 +185,8 @@ class ReadFile extends Component {
           <span>{this.state.size}</span>
         </div>
         <button disabled = {!this.state.process} onClick={() => this.processData()} >Process</button>
+        <h3>The best pair is:</h3><span>{this.state.top.pair}</span>
+        <h3>The score is:</h3><span>{this.state.top.score}</span>
       </div>
     )
   }
